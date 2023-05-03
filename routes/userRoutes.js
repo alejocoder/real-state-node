@@ -1,11 +1,11 @@
 import express from "express"
+import { formularioLogin, formularioRegister } from "../controllers/usuarioController.js";
 
 
 const router = express.Router();
 
-router.get('/', function (req, res) {
-    res.json({msg: 'get response'})
-});
+router.get('/login', formularioLogin);
+router.get('/registro', formularioRegister)
 
 router.post('/', function(req, res) {
     res.json({msg: 'post response'})
