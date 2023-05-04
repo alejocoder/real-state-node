@@ -1,6 +1,6 @@
 const formularioLogin = (req, res) => {
     res.render('auth/login',{
-        auth: true,
+        pagina: 'Iniciar Sesión',
         }
         )
     };
@@ -11,8 +11,15 @@ const formularioRegister = (req, res) => {
         })
     }
 
+    const formularioOlvidePassword = (req, res) => {
+        res.render('auth/olvide-password',{
+            pagina: 'Recupera tu acceso a Bienes Raices',
+            })
+        }
+
     
     export {
         formularioLogin,
         formularioRegister,
+        formularioOlvidePassword,
     }
