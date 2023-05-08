@@ -3,8 +3,12 @@ import userRoutes from "./routes/userRoutes.js";
 import db from './config/db.js';
 
 const app = express();
+
+app.use(express.urlencoded({extended: true}))
+
 try {
     await db.authenticate();
+    db.sync();
     console.log('conexión exitosa a la db')
 } catch (error) {
     console.log(error)
