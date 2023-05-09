@@ -1,5 +1,6 @@
 import { check, validationResult } from "express-validator";
 import Usuario from "../models/Usuario.js";
+import { generarId } from "../helpers/tokens.js";
 
 const formularioLogin = (req, res) => {
     res.render('auth/login',{
@@ -35,9 +36,31 @@ const registrar = async(req, res) => {
             })
     }
 
+    const existeUsuario = await Usuario.findOne({where: {email : req.body.email}});
+    if (existeUsuario) {
+        return res.render('auth/registro',{
+            pagina: 'Crear Cuenta',
+            errores: [{msg: 'el usuario ya está registrado'}],
+            usuario: {
+                nombre: req.body.nombre,
+                email: req.body.email
+            }
+            })
+    }
+
     res.json(resultado.array());
 
-    const usuario = await Usuario.create(req.body);
+    const usuario = await Usuario.create({
+        nombre: req.body.nombre,
+        email: req.body.email,
+        password: req.body.password,
+        token: generarId(),
+    });
+
+    res.render('templates/mensaje', {
+        pagina: 'Cuenta Creada Correctamente',
+        mensaje: 'Hemos Enviado un Email de Confirmación, presiona en el enlace'
+    })
 
     res.json(usuario);
 }
