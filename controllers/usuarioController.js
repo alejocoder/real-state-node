@@ -8,13 +8,14 @@ const formularioLogin = (req, res) => {
         pagina: 'Iniciar Sesión',
         }
         )
-    };
+};
 
 const formularioRegister = (req, res) => {
     res.render('auth/registro',{
         pagina: 'Crear Cuenta',
+        csrfToken: req.csrfToken(),
         })
-    }
+};
 
 const registrar = async(req, res) => {
 
@@ -29,6 +30,7 @@ const registrar = async(req, res) => {
     if (!resultado.isEmpty()) {
         return res.render('auth/registro',{
             pagina: 'Crear Cuenta',
+            csrfToken: req.csrfToken(),
             errores: resultado.array(),
             usuario: {
                 nombre: req.body.nombre,
@@ -41,6 +43,7 @@ const registrar = async(req, res) => {
     if (existeUsuario) {
         return res.render('auth/registro',{
             pagina: 'Crear Cuenta',
+            csrfToken: req.csrfToken(),
             errores: [{msg: 'el usuario ya está registrado'}],
             usuario: {
                 nombre: req.body.nombre,
@@ -70,18 +73,46 @@ const registrar = async(req, res) => {
     })
 
     res.json(usuario);
-}
+};
 
-    const formularioOlvidePassword = (req, res) => {
-        res.render('auth/olvide-password',{
-            pagina: 'Recupera tu acceso a Bienes Raices',
-            })
-        }
+const confirmar = async (req, res) => {
+
+    const {token} = req.params;
+
+    const usuario = await Usuario.findOne({where:{token }});
+
+    if (!usuario) {
+        return res.render('auth/confirmar-cuenta', {
+            pagina: 'error al confirmar cuenta',
+            mensaje: 'hubo un error al confirmar tu cuenta, intenta de nuevo',
+            error: true,
+        })
+    };
+
+    usuario.token = null;
+    usuario.confirmado = true;
+    await usuario.save();
+
+    res.render('auth/confirmar-cuenta', {
+        pagina: 'Cuenta Confirmada',
+        mensaje: 'La cuenta se confirmó correctamente',
+        error: false,
+    });
+};
+
+
+
+const formularioOlvidePassword = (req, res) => {
+    res.render('auth/olvide-password',{
+        pagina: 'Recupera tu acceso a Bienes Raices',
+        })
+}
 
     
     export {
         formularioLogin,
         formularioRegister,
         registrar,
+        confirmar,
         formularioOlvidePassword,
     }
